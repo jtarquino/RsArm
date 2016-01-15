@@ -92,9 +92,8 @@
     "wadmetricsresourceidRs": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]",
     "wadmetricsresourceidCatalog": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]",
     "wadmetricsresourceidDataSource": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]",
-    "wadcfgxend": "\"><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
-    "DataSourcesName": "[concat('DataSources', uniqueString(resourceGroup().id))]",
-      "DiagnosticsName": "[concat('Diagnostics', uniqueString(resourceGroup().id))]"
+    "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
+    "dnsName": "[parameters('dnsNameForPublicIP')]"
   },
   "resources": [
     {
@@ -157,7 +156,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsNameForPublicIP'), copyindex())]"
+          "domainNameLabel": "[concat(variables('dnsName'), copyindex())]"
         }
       }
     },
@@ -308,7 +307,7 @@
         "displayName": "CatalogMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 1))]"
       ],
       "properties": {
@@ -386,10 +385,10 @@
       "name": "[variables('vmNameDataSource')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "displayName": "CatalogMachine"
+        "displayName": "DataSourceMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 2))]"
       ],
       "properties": {
