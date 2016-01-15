@@ -37,7 +37,7 @@
     "vmPrefix": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "RSIAAS"
+      "defaultValue": "RS"
     },
     "defaultVmSize": {
       "type": "string",
@@ -79,10 +79,10 @@
     "virtualNetworkName": "SSRSVNET",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
-    "vhdStorageNameRs": "[concat('vhdstorage', uniqueString(resourceGroup().id))]",
-    "vhdStorageNameDataSource": "[concat('vhdstorage', uniqueString(resourceGroup().id))]",
-    "vhdStorageNameCatalog": "[concat('vhdstorage', uniqueString(resourceGroup().id))]",
-    "diagnosticsStorageAccountName": "[concat('diagnosticsstorage', uniqueString(resourceGroup().id))]",
+    "vhdStorageNameRs": "[concat('vhdrs', uniqueString(resourceGroup().id))]",
+    "vhdStorageNameDataSource": "[concat('vhdds', uniqueString(resourceGroup().id))]",
+    "vhdStorageNameCatalog": "[concat('vhdcatalog', uniqueString(resourceGroup().id))]",
+    "diagnosticsStorageAccountName": "[concat('diag', uniqueString(resourceGroup().id))]",
     "diagnosticsStorageAccountResourceGroup": "[resourcegroup().name]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
     "wadlogs": "<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
@@ -228,7 +228,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 0))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -258,7 +258,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), 0))]"
             }
           ]
         },
@@ -308,8 +308,8 @@
         "displayName": "CatalogMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 1))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -339,7 +339,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), 1))]"
             }
           ]
         },
@@ -386,11 +386,11 @@
       "name": "[variables('vmNameDataSource')]",
       "location": "[resourceGroup().location]",
       "tags": {
-        "displayName": "CatalogMachine"
+        "displayName": "DataSourceMachine"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 2))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -420,7 +420,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), 2))]"
             }
           ]
         },
