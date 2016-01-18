@@ -51,7 +51,7 @@
         "Standard_DS13",
         "Standard_DS14"
       ],
-      "defaultValue": "Standard_DS2"
+      "defaultValue": "Standard_DS3"
       }
   },
   "variables": {
@@ -94,7 +94,9 @@
     "wadmetricsresourceidCatalog": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]",
     "wadmetricsresourceidDataSource": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]",
     "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
-    "dnsName": "[parameters('dnsNameForPublicIP')]"
+    "dnsName": "[parameters('dnsNameForPublicIP')]",
+    "sqlConfigurationConfigurationFunction": "PrepareSqlServer.ps1\\PrepareSqlServer",
+    "sqlModuleUrl": "https://sqlvmgroup.blob.core.windows.net/singlevm/PrepareSqlServer.ps1.zip"
   },
   "resources": [
     {
@@ -283,33 +285,34 @@
         }
       },
       "resources": [
-        {
-          "type": "extensions",
-          "name": "Microsoft.Insights.VMDiagnosticsSettings",
-          "apiVersion": "2015-06-15",
-          "location": "[resourceGroup().location]",
-          "tags": {
-            "displayName": "AzureDiagnostics"
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Azure.Diagnostics",
-            "type": "IaaSDiagnostics",
-            "typeHandlerVersion": "1.5",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceidRs'), variables('wadcfgxend')))]",
-              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-            },
-            "protectedSettings": {
-              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-              "storageAccountEndPoint": "https://core.windows.net"
-            }
+          {
+              "name": "Microsoft.Insights.VMDiagnosticsSettings",
+              "type": "extensions",
+              "location": "[resourceGroup().location]",
+              "apiVersion": "2015-06-15",
+              "dependsOn": [
+                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
+              ],
+              "tags": {
+                  "displayName": "AzureDiagnostics"
+              },
+              "properties": {
+                  "publisher": "Microsoft.Azure.Diagnostics",
+                  "type": "IaaSDiagnostics",
+                  "typeHandlerVersion": "1.5",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                      "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceidRs'), variables('vmNameRs'), variables('wadcfgxend')))]",
+                      "storageAccount": "[variables('diagnosticsStorageAccountName')]"
+                  },
+                  "protectedSettings": {
+                      "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
+                      "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
+                      "storageAccountEndPoint": "https://core.windows.net"
+                  }
+              }
           }
-        }
+        
       ]
     },
     {
@@ -379,32 +382,39 @@
       },
       "resources": [
         {
-          "type": "extensions",
-          "name": "Microsoft.Insights.VMDiagnosticsSettings",
-          "apiVersion": "2015-06-15",
-          "location": "[resourceGroup().location]",
-          "tags": {
-            "displayName": "AzureDiagnostics"
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Azure.Diagnostics",
-            "type": "IaaSDiagnostics",
-            "typeHandlerVersion": "1.5",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceidCatalog'), variables('wadcfgxend')))]",
-              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-            },
-            "protectedSettings": {
-              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-              "storageAccountEndPoint": "https://core.windows.net"
-            }
+              "name": "SQLConfiguration",
+              "type": "extensions",
+              "location": "[resourceGroup().location]",
+              "apiVersion": "2015-06-15",
+              "dependsOn": [
+                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
+              ],
+              "tags": {
+                  "displayName": "SQLConfiguration"
+              },
+              "properties": {
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.9",
+                  "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "modulesUrl": "[variables('sqlModuleUrl')]",
+                  "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
+                  "properties": {
+                    "SQLAdminAuthCreds": {
+                      "userName": "[parameters('adminUsername')]",
+                      "Password": "[parameters('adminPassword')]"
+                    },
+                    "DisksCount": 1,
+                    "DiskSizeInGB": 1023,
+                    "DatabaseEnginePort": 1433,
+                    "WorkloadType": "General",
+                    "ConnectionType": "Private"
+                  }
+                },
+                  "protectedSettings": { }
+              }
           }
-        }
       ]
     },  
     {
@@ -472,33 +482,7 @@
         }
       },
       "resources": [
-        {
-          "type": "extensions",
-          "name": "Microsoft.Insights.VMDiagnosticsSettings",
-          "apiVersion": "2015-06-15",
-          "location": "[resourceGroup().location]",
-          "tags": {
-            "displayName": "AzureDiagnostics"
-          },
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Azure.Diagnostics",
-            "type": "IaaSDiagnostics",
-            "typeHandlerVersion": "1.5",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceidDataSource'), variables('wadcfgxend')))]",
-              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-            },
-            "protectedSettings": {
-              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-              "storageAccountEndPoint": "https://core.windows.net"
-            }
-          }
-        }
+        
       ]
     }
   ]

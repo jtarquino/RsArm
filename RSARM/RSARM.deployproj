@@ -34,6 +34,7 @@
     </None>
     <Content Include="Scripts\Deploy-AzureResourceGroup.ps1" />
     <Content Include="Templates\WindowsVirtualMachine.json" />
+    <Content Include="DSC\SQLConfiguratoinConfiguration.ps1" />
     <None Include="Templates\WindowsVirtualMachine.param.dev.json" />
   </ItemGroup>
   <ItemGroup>
