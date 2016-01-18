@@ -60,6 +60,7 @@
     "sqlImageOffer": "SQL2014-WS2012R2",
     "sqlImageSku": "Enterprise",
     "OSDiskName": "osdiskforwindowssimple",
+    "dataDiskName": "dataDisk",
     "nicName": "myVMNic",
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
@@ -227,6 +228,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameRs'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 0))]"
       ],
       "properties": {
@@ -252,7 +254,19 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "datadisk",
+              "createOption": "Empty",
+              "vhd": {
+                "uri": "[concat('http://', variables('vhdStorageNameRs'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]"
+              },
+              "caching": "ReadOnly",
+              "diskSizeGB": "1023"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -308,6 +322,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 1))]"
       ],
       "properties": {
@@ -333,7 +348,20 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "datadisk",
+              "createOption": "Empty",
+              "vhd": {
+                "uri": "[concat('http://', variables('vhdStorageNameCatalog'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]",
+              },
+              "caching": "ReadOnly",
+              "diskSizeGB": "1023"
+            }
+          ]
+          
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -389,6 +417,7 @@
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameCatalog'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 2))]"
       ],
       "properties": {
@@ -414,7 +443,19 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "datadisk",
+              "createOption": "Empty",
+              "vhd": {
+                "uri": "[concat('http://', variables('vhdStorageNameDataSource'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]"
+              },
+              "caching": "ReadOnly",
+              "diskSizeGB": "1023"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
