@@ -451,7 +451,7 @@
                     "DiskSizeInGB": 1023,
                     "DatabaseEnginePort": 1433,
                     "WorkloadType": "General",
-                    "ConnectionType": "Private"
+                    "ConnectionType": "Public"
                   }
                 },
                 "protectedSettings": {
@@ -610,7 +610,7 @@
                 "DiskSizeInGB": 1023,
                 "DatabaseEnginePort": 1433,
                 "WorkloadType": "General",
-                "ConnectionType": "Private"
+                "ConnectionType": "Public"
               }
             },
             "protectedSettings": {
