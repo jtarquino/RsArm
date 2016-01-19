@@ -53,6 +53,7 @@
       ],
       "defaultValue": "Standard_DS3"
       }
+
   },
   "variables": {
     "apiVersion": "2015-06-15",
@@ -95,7 +96,8 @@
     "wadperfcounters2": "<PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Read Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active read time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Write Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active write time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Transfers/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Reads/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk read operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Writes/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk write operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Read Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk read speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Write Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk write speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\LogicalDisk(_Total)\\% Free Space\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk free space (percentage)\" locale=\"en-us\"/></PerformanceCounterConfiguration></PerformanceCounters>",
     "wadcfgxstart": "[concat(variables('wadlogs'), variables('wadperfcounters1'), variables('wadperfcounters2'), '<Metrics resourceId=\"')]",
     "wadmetricsresourceid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name , '/providers/', 'Microsoft.Compute/virtualMachines/')]",
-    "wadcfgxend": "\"><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>"
+    "wadcfgxend": "\"><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
+
       
 
   },
@@ -286,35 +288,73 @@
         }
       },
       "resources": [
-          {
-              "name": "Microsoft.Insights.VMDiagnosticsSettings",
-              "type": "extensions",
-              "location": "[resourceGroup().location]",
-              "apiVersion": "2015-06-15",
-              "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
-              ],
-              "tags": {
-                  "displayName": "Diagnostics"
-              },
-              "properties": {
-                  "publisher": "Microsoft.Azure.Diagnostics",
-                  "type": "IaaSDiagnostics",
-                  "typeHandlerVersion": "1.5",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                      "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameRs'), variables('wadcfgxend')))]",
-                      "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-                  },
-                  "protectedSettings": {
-                      "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-                      "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-                      "storageAccountEndPoint": "https://core.windows.net"
-                  }
-              }
+        {
+          "name": "Microsoft.Insights.VMDiagnosticsSettings",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
+          ],
+          "tags": {
+            "displayName": "Diagnostics"
+          },
+          "properties": {
+            "publisher": "Microsoft.Azure.Diagnostics",
+            "type": "IaaSDiagnostics",
+            "typeHandlerVersion": "1.5",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameRs'), variables('wadcfgxend')))]",
+              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
+            },
+            "protectedSettings": {
+              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
+              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
+              "storageAccountEndPoint": "https://core.windows.net"
+            }
           }
-          
-        
+        },
+        {
+          "name": "SQLConfiguration",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
+          ],
+          "tags": {
+            "displayName": "SQLConfiguration"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "[variables('sqlModuleUrl')]",
+              "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
+              "properties": {
+                "SQLAdminAuthCreds": {
+                  "userName": "[parameters('adminUsername')]",
+                  "Password": "privateSettingsRef:AdminPassword"
+                },
+                "DisksCount": 1,
+                "DiskSizeInGB": 1023,
+                "DatabaseEnginePort": 1433,
+                "WorkloadType": "General",
+                "ConnectionType": "Private"
+              }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('adminPassword')]"
+              }
+            }
+          }
+        }
+
+
       ]
     },
     {
@@ -515,34 +555,72 @@
         }
       },
       "resources": [
-          {
-              "name": "Microsoft.Insights.VMDiagnosticsSettings",
-              "type": "extensions",
-              "location": "[resourceGroup().location]",
-              "apiVersion": "2015-06-15",
-              "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
-              ],
-              "tags": {
-                  "displayName": "Diagnostics"
-              },
-              "properties": {
-                  "publisher": "Microsoft.Azure.Diagnostics",
-                  "type": "IaaSDiagnostics",
-                  "typeHandlerVersion": "1.5",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                      "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameDataSource'), variables('wadcfgxend')))]",
-                      "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-                  },
-                  "protectedSettings": {
-                      "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-                      "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-                      "storageAccountEndPoint": "https://core.windows.net"
-                  }
-              }
+        {
+          "name": "Microsoft.Insights.VMDiagnosticsSettings",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
+          ],
+          "tags": {
+            "displayName": "Diagnostics"
+          },
+          "properties": {
+            "publisher": "Microsoft.Azure.Diagnostics",
+            "type": "IaaSDiagnostics",
+            "typeHandlerVersion": "1.5",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameDataSource'), variables('wadcfgxend')))]",
+              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
+            },
+            "protectedSettings": {
+              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
+              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
+              "storageAccountEndPoint": "https://core.windows.net"
+            }
           }
-        
+        },
+        {
+          "name": "SQLConfiguration",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
+          ],
+          "tags": {
+            "displayName": "SQLConfiguration"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "[variables('sqlModuleUrl')]",
+              "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
+              "properties": {
+                "SQLAdminAuthCreds": {
+                  "userName": "[parameters('adminUsername')]",
+                  "Password": "privateSettingsRef:AdminPassword"
+                },
+                "DisksCount": 1,
+                "DiskSizeInGB": 1023,
+                "DatabaseEnginePort": 1433,
+                "WorkloadType": "General",
+                "ConnectionType": "Private"
+              }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('adminPassword')]"
+              }
+            }
+          }
+        }
+
       ]
     }
   ]
