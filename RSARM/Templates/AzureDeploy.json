@@ -16,7 +16,7 @@
       }
     },
     "dbSAUsername": {
-      "type": "securestring",
+      "type": "string",
       "metadata": {
         "description": "Username for SA of the database"
       }
