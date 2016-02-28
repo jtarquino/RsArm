@@ -7,6 +7,9 @@ Click the button below to deploy
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FAzureDeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FAzureDeploy.json" target="_blank">
+  <img src="http://armviz.io/visualizebutton.png"/>
+</a>
 
 ***Warning: For CTP Versions of SQL the SKU should be set to Evaluation*** 
 
