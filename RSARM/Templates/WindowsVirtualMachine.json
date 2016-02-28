@@ -333,8 +333,7 @@
           "apiVersion": "2015-06-15",
           "dependsOn": [
             "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]",
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
-            //"[concat('Microsoft.Compute/virtualMachines/extensions/', concat(variables('vmNameCatalog'),'/SQLConfiguration'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmNameCatalog'), 'SQLConfiguration')]"
           ],
           "tags": {
             "displayName": "SSRSConfiguration"
