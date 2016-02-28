@@ -349,14 +349,14 @@
               "properties": {
                 "SQLSAAdminAuthCreds": {
                   "userName": "[parameters('dbSAUsername')]",
-                  "Password": "privateSettingsRef:AdminPassword"
+                  "Password": "privateSettingsRef:SAPassword"
                 },
                 "CatalogMachine": "[reference(variables('catalogPublicIpId'),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn]"
               }
             },
             "protectedSettings": {
               "Items": {
-                "AdminPassword": "[parameters('dbSAUserPassword')]"
+                "SAPassword": "[parameters('dbSAUserPassword')]"
               }
             }
           }
@@ -456,8 +456,8 @@
                       "Password": "privateSettingsRef:AdminPassword"
                     },
                     "SQLAuthCreds": {
-                      "userName": "[parameters('adminUsername')]",
-                      "Password": "privateSettingsRef:AdminPassword"
+                      "userName": "[parameters('dbSAUserName')]",
+                      "Password": "privateSettingsRef:SAPassword"
                     },
                     "DisksCount": 1,
                     "DiskSizeInGB": 1023,
@@ -468,7 +468,8 @@
                 },
                 "protectedSettings": {
                   "Items": {
-                    "AdminPassword": "[parameters('adminPassword')]"
+                    "AdminPassword": "[parameters('adminPassword')]",
+                    "SAPassword":"[parameters('dbSAUserPassword')]"
                   }
                 }
               }
