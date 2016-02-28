@@ -1,6 +1,6 @@
 # Create a new SSRS Server with 3 machines
 
-This template creates three new Azure VMs, each with a public IP address, it configures one VM to be an SSRS Server, one with SQL Server mixed auth for the SSRS Catalog, and one one with SQL Server mixed auth for datasources, all VMs have public facing RDP and diagnostics enabled
+This template creates three new Azure VMs, each with a public IP address, it configures one VM to be an SSRS Server, one with SQL Server mixed auth for the SSRS Catalog, and one one with SQL Server mixed auth for datasources, all VMs have public facing RDP and diagnostics enabled , the diagnostics is stored in a consolidated diagnostics storage account different than the vm disk
 
 Click the button below to deploy
 
@@ -8,3 +8,9 @@ Click the button below to deploy
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
+***Warning: For CTP Versions of SQL the SKU should be set to Evaluation*** 
+
+***
+It contains a modified version of xSQLServerRSConfig that supports machines that are non domain join and uses SQL authentication for connection SSRS with the database 
+based on the DSC package http://www.powershellgallery.com/packages/xSQLServer/1.4.0.0.
+ 
