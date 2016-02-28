@@ -79,7 +79,6 @@
     }
   },
   "variables": {
-    "apiVersion": "2015-06-15",
     "sqlImagePublisher": "MicrosoftSQLServer",
     "sqlImageOffer": "[parameters('sqlImageVersion')]",
     "sqlImageSku": "[parameters('sqlImageSKU')]",
@@ -246,7 +245,7 @@
       }
     },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameRs')]",
       "location": "[resourceGroup().location]",
@@ -377,7 +376,7 @@
       ]
     },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameCatalog')]",
       "location": "[resourceGroup().location]",
@@ -419,13 +418,13 @@
               "name": "datadisk",
               "createOption": "Empty",
               "vhd": {
-                "uri": "[concat('http://', variables('vhdStorageNameCatalog'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]",
+                "uri": "[concat('http://', variables('vhdStorageNameCatalog'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]"
               },
               "caching": "ReadOnly",
               "diskSizeGB": "1023"
             }
           ]
-          
+
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -443,79 +442,79 @@
       },
       "resources": [
         {
-              "name": "SQLConfigurationMixedAuth",
-              "type": "extensions",
-              "location": "[resourceGroup().location]",
-              "apiVersion": "2015-06-15",
-              "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
-              ],
+          "name": "SQLConfigurationMixedAuth",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
+          ],
           "tags": {
             "displayName": "SQLConfigurationMixedAuth"
           },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "[variables('sqlModuleUrl')]",
+              "configurationFunction": "[variables('sqlSAConfigurationConfigurationFunction')]",
               "properties": {
-                  "publisher": "Microsoft.Powershell",
-                  "type": "DSC",
-                  "typeHandlerVersion": "2.9",
-                  "autoUpgradeMinorVersion": true,
-                "settings": {
-                  "modulesUrl": "[variables('sqlModuleUrl')]",
-                  "configurationFunction": "[variables('sqlSAConfigurationConfigurationFunction')]",
-                  "properties": {
-                    "SQLAdminAuthCreds": {
-                      "userName": "[parameters('adminUsername')]",
-                      "Password": "privateSettingsRef:AdminPassword"
-                    },
-                    "SQLAuthCreds": {
-                      "userName": "[parameters('dbSAUserName')]",
-                      "Password": "privateSettingsRef:SAPassword"
-                    },
-                    "DisksCount": 1,
-                    "DiskSizeInGB": 1023,
-                    "DatabaseEnginePort": 1433,
-                    "WorkloadType": "General",
-                    "ConnectionType": "Public"
-                  }
+                "SQLAdminAuthCreds": {
+                  "userName": "[parameters('adminUsername')]",
+                  "Password": "privateSettingsRef:AdminPassword"
                 },
-                "protectedSettings": {
-                  "Items": {
-                    "AdminPassword": "[parameters('adminPassword')]",
-                    "SAPassword":"[parameters('dbSAUserPassword')]"
-                  }
-                }
+                "SQLAuthCreds": {
+                  "userName": "[parameters('dbSAUserName')]",
+                  "Password": "privateSettingsRef:SAPassword"
+                },
+                "DisksCount": 1,
+                "DiskSizeInGB": 1023,
+                "DatabaseEnginePort": 1433,
+                "WorkloadType": "General",
+                "ConnectionType": "Public"
               }
-          },
-          {
-              "name": "Microsoft.Insights.VMDiagnosticsSettings",
-              "type": "extensions",
-              "location": "[resourceGroup().location]",
-              "apiVersion": "2015-06-15",
-              "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
-              ],
-              "tags": {
-                  "displayName": "Diagnostics"
-              },
-              "properties": {
-                  "publisher": "Microsoft.Azure.Diagnostics",
-                  "type": "IaaSDiagnostics",
-                  "typeHandlerVersion": "1.5",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                      "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameCatalog'), variables('wadcfgxend')))]",
-                      "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-                  },
-                  "protectedSettings": {
-                      "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-                      "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-                      "storageAccountEndPoint": "https://core.windows.net"
-                  }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('adminPassword')]",
+                "SAPassword": "[parameters('dbSAUserPassword')]"
               }
+            }
           }
+        },
+        {
+          "name": "Microsoft.Insights.VMDiagnosticsSettings",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-06-15",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
+          ],
+          "tags": {
+            "displayName": "Diagnostics"
+          },
+          "properties": {
+            "publisher": "Microsoft.Azure.Diagnostics",
+            "type": "IaaSDiagnostics",
+            "typeHandlerVersion": "1.5",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameCatalog'), variables('wadcfgxend')))]",
+              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
+            },
+            "protectedSettings": {
+              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
+              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
+              "storageAccountEndPoint": "https://core.windows.net"
+            }
+          }
+        }
       ]
-    },  
+    },
     {
-      "apiVersion": "[variables('apiVersion')]",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameDataSource')]",
       "location": "[resourceGroup().location]",
