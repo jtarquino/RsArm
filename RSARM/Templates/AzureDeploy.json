@@ -44,7 +44,18 @@
         "SQL2016CTP3.1-WS2012R2"
       ],
       "metadata": {
-        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version. Allowed values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter."
+        "description": "The SQL Iamge for the VM. This will pick a fully patched image of this given SQL Image"
+      }
+    },
+    "sqlImageSKU": {
+      "type": "string",
+      "defaultValue": "Enterprise",
+      "allowedValues": [
+        "Enterprise",
+        "Evaluation"
+      ],
+      "metadata": {
+        "description": "The SQL SKU, for SQL CTP Versions the only available is evaluation"  
       }
     },
     "vmPrefix": {
@@ -71,7 +82,7 @@
     "apiVersion": "2015-06-15",
     "sqlImagePublisher": "MicrosoftSQLServer",
     "sqlImageOffer": "[parameters('sqlImageVersion')]",
-    "sqlImageSku": "Enterprise",
+    "sqlImageSku": "[parameters('sqlImageSKU')]",
     "OSDiskName": "osdiskforwindowssimple",
     "dataDiskName": "dataDisk",
     "nicName": "myVMNic",
