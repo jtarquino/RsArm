@@ -37,6 +37,7 @@
     <None Include="DSC\PrepareSqlServer.ps1.zip" />
     <None Include="Templates\azuredeploy.json" />
     <None Include="Templates\provisioningSQL.json" />
+    <None Include="Templates\2WindowsVirtualMachine.param.dev.json" />
     <None Include="Templates\WindowsVirtualMachine.param.dev.json" />
   </ItemGroup>
   <ItemGroup>

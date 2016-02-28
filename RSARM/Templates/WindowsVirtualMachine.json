@@ -15,6 +15,18 @@
         "description": "Password for the Virtual Machine."
       }
     },
+    "dbSAUsername": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Username for SA of the database"
+      }
+    },
+    "dbSAUserPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for SA of the database"
+      }
+    },
     "dnsNameForPublicIP": {
       "type": "string",
       "minLength": 1,
@@ -52,7 +64,7 @@
         "Standard_DS14"
       ],
       "defaultValue": "Standard_DS3"
-      }
+    }
   },
   "variables": {
     "apiVersion": "2015-06-15",
@@ -87,9 +99,9 @@
 
     "dnsName": "[parameters('dnsNameForPublicIP')]",
     "sqlConfigurationConfigurationFunction": "PrepareSqlServer.ps1\\PrepareSqlServer",
-    "RsConfigurationConfigurationFunction": "PrepareRsServer.ps1\\PrepareRsServer",
+    "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
+    "rsConfigurationConfigurationFunction": "PrepareRsServer.ps1\\PrepareSSRSServer",
     "sqlModuleUrl": "https://raw.githubusercontent.com/jtarquino/RsArm/master/RSARM/DSC/PrepareSqlServer.ps1.zip",
-    "rsModuleUrl": "https://raw.githubusercontent.com/jtarquino/RsArm/master/RSARM/DSC/PrepareRsServer.ps1.zip",
     "diagnosticsStorageAccountName": "[concat('diag', uniqueString(resourceGroup().id))]",
     "diagnosticsStorageAccountResourceGroup": "[resourceGroup().name]",
     "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', variables('diagnosticsStorageAccountResourceGroup'), '/providers/', 'Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
@@ -99,9 +111,6 @@
     "wadcfgxstart": "[concat(variables('wadlogs'), variables('wadperfcounters1'), variables('wadperfcounters2'), '<Metrics resourceId=\"')]",
     "wadmetricsresourceid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name , '/providers/', 'Microsoft.Compute/virtualMachines/')]",
     "wadcfgxend": "><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>"
-
-
-
   },
   "resources": [
     {
@@ -318,15 +327,17 @@
         //  }
         //},
         {
-          "name": "SQLConfiguration",
+          "name": "SSRSConfiguration",
           "type": "extensions",
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-06-15",
           "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]"
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]",
+            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
+            //"[concat('Microsoft.Compute/virtualMachines/extensions/', concat(variables('vmNameCatalog'),'/SQLConfiguration'))]"
           ],
           "tags": {
-            "displayName": "SQLConfiguration"
+            "displayName": "SSRSConfiguration"
           },
           "properties": {
             "publisher": "Microsoft.Powershell",
@@ -335,62 +346,22 @@
             "autoUpgradeMinorVersion": true,
             "settings": {
               "modulesUrl": "[variables('sqlModuleUrl')]",
-              "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
+              "configurationFunction": "[variables('rsConfigurationConfigurationFunction')]",
               "properties": {
-                "SQLAdminAuthCreds": {
-                  "userName": "[parameters('adminUsername')]",
+                "SQLSAAdminAuthCreds": {
+                  "userName": "[parameters('dbSAUsername')]",
                   "Password": "privateSettingsRef:AdminPassword"
                 },
-                "DisksCount": 1,
-                "DiskSizeInGB": 1023,
-                "DatabaseEnginePort": 1433,
-                "WorkloadType": "General",
-                "ConnectionType": "Private"
+                "CatalogMachine": "[reference(variables('catalogPublicIpId'),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn]"
               }
             },
             "protectedSettings": {
               "Items": {
-                "AdminPassword": "[parameters('adminPassword')]"
+                "AdminPassword": "[parameters('dbSAUserPassword')]"
               }
             }
           }
         }
-        //,
-        //{
-        //  "name": "RSConfiguration",
-        //  "type": "extensions",
-        //  "location": "[resourceGroup().location]",
-        //  "apiVersion": "2015-06-15",
-        //  "dependsOn": [
-        //    "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameRs'))]",
-        //    "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameCatalog'))]"
-        //  ],
-        //  "tags": {
-        //    "displayName": "RSConfiguration"
-        //  },
-        //  "properties": {
-        //    "publisher": "Microsoft.Powershell",
-        //    "type": "DSC",
-        //    "typeHandlerVersion": "2.9",
-        //    "autoUpgradeMinorVersion": true,
-        //    "settings": {
-        //      "modulesUrl": "[variables('sqlModuleUrl')]",
-        //      "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
-        //      "properties": {
-        //        "SQLAdminAuthCreds": {
-        //          "userName": "[parameters('adminUsername')]",
-        //          "Password": "privateSettingsRef:AdminPassword"
-        //        },
-        //        "CatalogMachine": "[reference(variables('catalogPublicIpId'),providers('Microsoft.Network', 'publicIPAddresses').apiVersions[0]).dnsSettings.fqdn]"
-        //      }
-        //    },
-        //    "protectedSettings": {
-        //      "Items": {
-        //        "AdminPassword": "[parameters('adminPassword')]"
-        //      }
-        //    }
-        //  }
-        //}
 
 
       ]
@@ -479,9 +450,13 @@
                   "autoUpgradeMinorVersion": true,
                 "settings": {
                   "modulesUrl": "[variables('sqlModuleUrl')]",
-                  "configurationFunction": "[variables('sqlConfigurationConfigurationFunction')]",
+                  "configurationFunction": "[variables('sqlSAConfigurationConfigurationFunction')]",
                   "properties": {
                     "SQLAdminAuthCreds": {
+                      "userName": "[parameters('adminUsername')]",
+                      "Password": "privateSettingsRef:AdminPassword"
+                    },
+                    "SQLAuthCreds": {
                       "userName": "[parameters('adminUsername')]",
                       "Password": "privateSettingsRef:AdminPassword"
                     },
