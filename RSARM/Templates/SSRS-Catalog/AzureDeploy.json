@@ -131,18 +131,6 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('vhdStorageNameDataSource')]",
-      "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "DataStorageAccountDataSource"
-      },
-      "properties": {
-        "accountType": "Premium_LRS"
-      }
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('vhdStorageNameCatalog')]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
@@ -170,7 +158,7 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(variables('publicIPAddressName'), copyindex())]",
       "location": "[resourceGroup().location]",
-      "copy": {"name": "publicIpLoop", "count": 3},
+      "copy": {"name": "publicIpLoop", "count": 2},
       "tags": {
         "displayName": "PublicIPAddress"
       },
@@ -212,7 +200,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "nicLoop",
-        "count": 3
+        "count": 2
       },
       "tags": {
         "displayName": "NetworkInterface"
@@ -505,145 +493,6 @@
             }
           }
         }
-      ]
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('vmNameDataSource')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "DataSourceMachine"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('vhdStorageNameDataSource'))]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicName'), 2))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('vmSizeRs')]"
-        },
-        "osProfile": {
-          "computerName": "[variables('vmNameDataSource')]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('sqlImagePublisher')]",
-            "offer": "[variables('sqlImageOffer')]",
-            "sku": "[variables('sqlImageSku')]",
-            "version": "latest"
-          },
-          "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat('http://', variables('vhdStorageNameDataSource'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('OSDiskName'), '.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
-          },
-          "dataDisks": [
-            {
-              "lun": 0,
-              "name": "datadisk",
-              "createOption": "Empty",
-              "vhd": {
-                "uri": "[concat('http://', variables('vhdStorageNameDataSource'), '.blob.core.windows.net/', variables('vhdStorageContainerName'), '/', variables('dataDiskName'), '.vhd')]"
-              },
-              "caching": "ReadOnly",
-              "diskSizeGB": "1023"
-            }
-          ]
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), 2))]"
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat('http://', variables('diagnosticsStorageAccountName'), '.blob.core.windows.net')]"
-          }
-        }
-      },
-      "resources": [
-        {
-          "name": "Microsoft.Insights.VMDiagnosticsSettings",
-          "type": "extensions",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2015-06-15",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
-          ],
-          "tags": {
-            "displayName": "Diagnostics"
-          },
-          "properties": {
-            "publisher": "Microsoft.Azure.Diagnostics",
-            "type": "IaaSDiagnostics",
-            "typeHandlerVersion": "1.5",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), variables('vmNameDataSource'), variables('wadcfgxend')))]",
-              "storageAccount": "[variables('diagnosticsStorageAccountName')]"
-            },
-            "protectedSettings": {
-              "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
-              "storageAccountKey": "[listkeys(variables('accountid'), '2015-06-15').key1]",
-              "storageAccountEndPoint": "https://core.windows.net"
-            }
-          }
-        },
-        {
-          "name": "SQLConfigurationMixedAuth",
-          "type": "extensions",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2015-06-15",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmNameDataSource'))]"
-          ],
-          "tags": {
-            "displayName": "SQLConfigurationMixedAuth"
-          },
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.9",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "modulesUrl": "[variables('sqlModuleUrl')]",
-              "configurationFunction": "[variables('sqlSAConfigurationConfigurationFunction')]",
-              "properties": {
-                "SQLAdminAuthCreds": {
-                  "userName": "[parameters('adminUsername')]",
-                  "Password": "privateSettingsRef:AdminPassword"
-                },
-                "SQLAuthCreds": {
-                  "userName": "[parameters('dbSAUserName')]",
-                  "Password": "privateSettingsRef:SAPassword"
-                },
-
-                "DisksCount": 1,
-                "DiskSizeInGB": 1023,
-                "DatabaseEnginePort": 1433,
-                "WorkloadType": "General",
-                "ConnectionType": "Public"
-              }
-            },
-            "protectedSettings": {
-              "Items": {
-                "AdminPassword": "[parameters('adminPassword')]",
-                "SAPassword": "[parameters('dbSAUserPassword')]"
-              }
-            }
-          }
-        }
-
       ]
     }
   ]

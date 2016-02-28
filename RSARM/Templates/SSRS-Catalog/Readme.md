@@ -1,13 +1,13 @@
-# Create a new SSRS Server with 3 machines
+# Create a new SSRS Server with a SQL catalog (2 Machines) 
 
-This template creates three new Azure VMs, each with a public IP address, it configures one VM to be an SSRS Server, one with SQL Server mixed auth for the SSRS Catalog with the SQL Agent Started, and one one with SQL Server mixed auth for datasources, all VMs have public facing RDP and diagnostics enabled , the diagnostics is stored in a consolidated diagnostics storage account different than the vm disk
+This template creates two new Azure VMs, each with a public IP address, it configures one VM to be an SSRS Server, one with SQL Server mixed auth for the SSRS Catalog with the SQL Agent Started. All VMs have public facing RDP and diagnostics enabled , the diagnostics is stored in a consolidated diagnostics storage account different than the vm disk
 
 Click the button below to deploy
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FSSRS-Catalog-Datasource%2FAzureDeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FSSRS-Catalog%2FAzureDeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FSSRS-Catalog-Datasource%2FAzureDeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fjtarquino%2FRsArm%2Fmaster%2FRSARM%2FTemplates%2FSSRS-Catalog%2FAzureDeploy.json" target="_blank">
   <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
