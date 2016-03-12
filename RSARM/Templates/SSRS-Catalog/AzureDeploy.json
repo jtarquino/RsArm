@@ -57,19 +57,9 @@
       "minLength": 1,
       "defaultValue": "RS"
     },
-    "defaultVmSize": {
+    "vmSize": {
       "type": "string",
-      "allowedValues": [
-        "Standard_DS1",
-        "Standard_DS2",
-        "Standard_DS3",
-        "Standard_DS4",
-        "Standard_DS11",
-        "Standard_DS12",
-        "Standard_DS13",
-        "Standard_DS14"
-      ],
-      "defaultValue": "Standard_DS3"
+      "defaultValue": "Standard_D3"
     },
     "vhdStorageType": {
       "type": "string",
@@ -95,12 +85,12 @@
     "publicIPAddressType": "Dynamic",
     "vhdStorageContainerName": "vhds",
     "vmNameRs": "[concat(parameters('vmPrefix'), '-RS')]",
-    "vmSizeRs": "[parameters('defaultVmSize')]",
+    "vmSizeRs": "[parameters('vmSize')]",
     "vmImageOfferRs": "[variables('sqlImageOffer')]",
     "vmImageSkuRs": "[variables('sqlImageSku')]",
-    "vmSizeDataSource": "[parameters('defaultVmSize')]",
+    "vmSizeDataSource": "[parameters('vmSize')]",
     "vmNameDataSource": "[concat(parameters('vmPrefix'), '-DataSource')]",
-    "vmSizeCatalog": "[parameters('defaultVmSize')]",
+    "vmSizeCatalog": "[parameters('vmSize')]",
     "vmNameCatalog": "[concat(parameters('vmPrefix'), '-Catalog')]",
     "virtualNetworkName": "SSRSVNET",
     "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",

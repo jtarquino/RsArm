@@ -11,7 +11,7 @@
     "dbSAUsername": {
       "value": "theSaAdmin"
     },
-    "defaultVmSize": {
+    "vmSize": {
       "value": "Standard_DS3"
     },
     "sqlImageVersion": {
@@ -25,6 +25,9 @@
     },
     "sqlImageSKU": {
       "value": "Enterprise"
+    },
+    "vhdStorageType": {
+      "value": "Premium_LRS"
     }
   }
 }
