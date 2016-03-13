@@ -129,7 +129,7 @@
         "artifactsBaseUrl": "",
         "description": "URL to acquire other templates"
       },
-      "defaultValue": "https://raw.githubusercontent.com/jtarquino/RsArm/master/RSARM/Templates/SSRS-DomainController"
+      "defaultValue": "https://raw.githubusercontent.com/jtarquino/RsArm/ds/RSARM/Templates/SSRS-DomainController"
     },
     "storageAccountType": {
       "type": "string",
