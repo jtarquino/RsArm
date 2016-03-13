@@ -11,6 +11,9 @@
     "sqlpublicIPAddressName": {
       "type": "string"
     },
+    "sqldatasourcepublicIPAddressName": {
+      "type": "string"
+    },
     "publicIPAddressType": {
       "type": "string"
     }
@@ -33,6 +36,15 @@
       "properties": {
         "publicIPAllocationMethod": "[parameters('publicIPAddressType')]"
       }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('sqldatasourcepublicIPAddressName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAddressType')]"
+      }
     }
   ],
   "outputs": {
@@ -43,6 +55,10 @@
     "sqlPublicIpResourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('sqlpublicIPAddressName'))]"
+    },
+    "sqlPublicDatasourceIpResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('sqldatasourcepublicIPAddressName'))]"
     }
   }
 }
