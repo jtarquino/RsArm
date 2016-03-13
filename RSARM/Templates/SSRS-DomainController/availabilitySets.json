@@ -11,7 +11,10 @@
     "sqlAvailabilitySetName": {
       "type": "string"
     },
-    "spAvailabilitySetName": {
+    "ssrsAvailabilitySetName": {
+      "type": "string"
+    },
+    "sqldatasourceAvailabilitySetName": {
       "type": "string"
     }
   },
@@ -24,13 +27,19 @@
     },
     {
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[parameters('spAvailabilitySetName')]",
+      "name": "[parameters('ssrsAvailabilitySetName')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]"
     },
     {
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[parameters('sqlAvailabilitySetName')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[parameters('sqldatasourceAvailabilitySetName')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]"
     }

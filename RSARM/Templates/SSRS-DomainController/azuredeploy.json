@@ -129,7 +129,7 @@
         "artifactsBaseUrl": "",
         "description": "URL to acquire other templates"
       },
-      "defaultValue": "https://raw.githubusercontent.com/jtarquino/RsArm/master/RSARM/Templates/SSRS-DomainController"
+      "defaultValue": "https://raw.githubusercontent.com/jtarquino/RsArm/ds/RSARM/Templates/SSRS-DomainController"
     },
     "storageAccountType": {
       "type": "string",
@@ -190,7 +190,7 @@
     "ssrsWebNAT": "ssrsWeb",
     "adSubnetName": "adSubnet",
     "sqlSubnetName": "sqlSubnet",
-    "sqldatasourceSubnetName": "sqlSubnet",
+    "sqldatasourceSubnetName": "sqldatasourceSubnet",
     "ssrsSubnetName": "ssrsSubnet",
     "adNicName": "adNic",
     "sqlNicName": "sqlNic",
@@ -244,9 +244,10 @@
     "adpublicIPAddressName": "adpublicIP",
     "sqlpublicIPAddressName": "sqlpublicIP",
     "sqldatasourcepublicIPAddressName": "sqldatasourcepublicIP",
-    "ssrsAvailabilitySetName": "ssrsAvailabiltySet",
-    "sqlAvailabilitySetName": "sqlAvailabiltySet",
-    "adAvailabilitySetName": "adAvailabiltySet",
+    "ssrsAvailabilitySetName": "ssrsAvailabilitySet",
+    "sqlAvailabilitySetName": "sqlAvailabilitySet",
+    "sqldatasourceAvailabilitySetName": "sqldatasourceAvailabilitySet",
+    "adAvailabilitySetName": "adAvailabilitySet",
     "publicIPAddressType": "Dynamic",
     "ssrspublicIPAddressName": "ssrsPublicIp",
     "subnets": [
@@ -373,8 +374,11 @@
           "sqlAvailabilitySetName": {
             "value": "[variables('sqlAvailabilitySetName')]"
           },
-          "spAvailabilitySetName": {
+          "ssrsAvailabilitySetName": {
             "value": "[variables('ssrsAvailabilitySetName')]"
+          },
+          "sqldatasourceAvailabilitySetName": {
+            "value": "[variables('sqldatasourceAvailabilitySetName')]"
           }
         }
       }
@@ -725,7 +729,7 @@
             "value": "[parameters('sqlVMSize')]"
           },
           "sqlAvailabilitySetName": {
-            "value": "[variables('sqlAvailabilitySetName')]"
+            "value": "[variables('sqldatasourceAvailabilitySetName')]"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
