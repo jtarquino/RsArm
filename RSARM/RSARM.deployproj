@@ -26,7 +26,6 @@
   <!-- vertag<:>end -->
   <ItemGroup>
     <Folder Include="Scripts\" />
-    <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\SSRS-Catalog-Datasource\AzureDeploy.json" />
@@ -41,33 +40,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\SSRS-Catalog\Readme.md" />
+    <None Include="Templates\SSRS-DomainController\availabilitySets.json" />
     <None Include="Templates\SSRS-DomainController\azuredeploy.json" />
+    <None Include="Templates\SSRS-DomainController\azuredeploy.parameters.json" />
+    <None Include="Templates\SSRS-DomainController\configuringSharepoint.json" />
     <None Include="Templates\SSRS-DomainController\configuringSQL.json" />
     <None Include="Templates\SSRS-DomainController\configuringSsrs.json" />
+    <None Include="Templates\SSRS-DomainController\createUiDefinition.json" />
     <None Include="Templates\SSRS-DomainController\creatingNICS.json" />
     <None Include="Templates\SSRS-DomainController\creatingPublicIPs.json" />
+    <None Include="Templates\SSRS-DomainController\dsc\ConfigureSqlServer.ps1.zip" />
+    <None Include="Templates\SSRS-DomainController\dsc\CreateADPDC.ps1.zip" />
+    <None Include="Templates\SSRS-DomainController\dsc\PrepareSqlServer.ps1.zip" />
+    <None Include="Templates\SSRS-DomainController\joinDomainSQLVm.json" />
     <None Include="Templates\SSRS-DomainController\loadBalancers.json" />
+    <None Include="Templates\SSRS-DomainController\mainTemplate.json" />
+    <None Include="Templates\SSRS-DomainController\metadata.json" />
     <None Include="Templates\SSRS-DomainController\provisioningDomainController.json" />
+    <None Include="Templates\SSRS-DomainController\provisioningSharepoint.json" />
     <None Include="Templates\SSRS-DomainController\provisioningSQL.json" />
     <None Include="Templates\SSRS-DomainController\publicip-new.json" />
     <None Include="Templates\SSRS-DomainController\storageAccount.json" />
+    <None Include="Templates\SSRS-DomainController\vnet-new.json" />
     <None Include="Templates\SSRS-DomainController\vnet-with-dns-server.json" />
-    <None Include="Tools\AzCopy.exe" />
-    <None Include="Tools\Microsoft.Data.Edm.dll">
-      <Visible>False</Visible>
-    </None>
-    <None Include="Tools\Microsoft.Data.OData.dll">
-      <Visible>False</Visible>
-    </None>
-    <None Include="Tools\Microsoft.Data.Services.Client.dll">
-      <Visible>False</Visible>
-    </None>
-    <None Include="Tools\Microsoft.WindowsAzure.Storage.dll">
-      <Visible>False</Visible>
-    </None>
-    <None Include="Tools\Microsoft.WindowsAzure.Storage.DataMovement.dll">
-      <Visible>False</Visible>
-    </None>
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
