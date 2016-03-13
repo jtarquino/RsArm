@@ -58,6 +58,9 @@
     },
     "sqldatasourceRDPNATRuleID": {
       "type": "string"
+    },
+    "sqldatasourceSubnetRef": {
+      "type": "string"
     }
   },
   "resources": [
@@ -164,7 +167,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[parameters('sqlSubnetRef')]"
+                "id": "[parameters('sqldatasourceSubnetRef')]"
               },
               "loadBalancerBackendAddressPools": [
                 {

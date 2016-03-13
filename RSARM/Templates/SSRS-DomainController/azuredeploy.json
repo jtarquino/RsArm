@@ -37,6 +37,13 @@
       },
       "defaultValue": "10.0.2.0/24"
     },
+    "sqldatasourceSubnet": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the SQL subnet created in the new VNET"
+      },
+      "defaultValue": "10.0.3.0/24"
+    },
     "adNicIPAddress": {
       "type": "string",
       "metadata": {
@@ -183,6 +190,7 @@
     "ssrsWebNAT": "ssrsWeb",
     "adSubnetName": "adSubnet",
     "sqlSubnetName": "sqlSubnet",
+    "sqldatasourceSubnetName": "sqlSubnet",
     "ssrsSubnetName": "ssrsSubnet",
     "adNicName": "adNic",
     "sqlNicName": "sqlNic",
@@ -191,6 +199,7 @@
     "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('adSubnetName'))]",
     "sqlSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('sqlSubnetName'))]",
+    "sqldatasourceSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('sqldatasourceSubnetName'))]",
     "ssrsSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('ssrsSubnetName'))]",
     "adNicId": "[resourceId('Microsoft.Network/networkInterfaces',variables('adNicName'))]",
     "sqlNicId": "[resourceId('Microsoft.Network/networkInterfaces',variables('sqlNicName'))]",
@@ -198,7 +207,7 @@
     "sqldatasourceNicId": "[resourceId('Microsoft.Network/networkInterfaces',variables('sqldatasourceNicName'))]",
     "adLBName": "adLoadBalancer",
     "sqlLBName": "sqlLoadBalancer",
-    "sqldatsourceLBName": "sqldatasourceLoadBalancer",
+    "sqldatasourceLBName": "sqldatasourceLoadBalancer",
     "ssrsLBName": "ssrsLoadBalancer",
 
     "adIPConfigID": "[concat(variables('adNicId'),'/ipConfigurations/ipconfig1')]",
@@ -214,9 +223,10 @@
     "sqlBEAddressPoolID": "[concat(variables('sqllbID'),'/backendAddressPools/',variables('LBBE'))]",
 
     "sqldatasourceIPConfigID": "[concat(variables('sqldatasourceNicId'),'/ipConfigurations/ipconfig1')]",
+    "sqldatasourcelbID": "[resourceId('Microsoft.Network/loadBalancers',variables('sqldatasourceLBName'))]",
     //"sqldatasourcelbFEConfigID": "[concat(variables('sqldatasourceNicId'),'/frontendIPConfigurations/',variables('LBFE'))]",
-    "sqldatasourceRDPNATRuleID": "[concat(variables('sqldatasourceNicId'),'/inboundNatRules/',variables('RDPNAT'))]",
-    "sqldatasourceBEAddressPoolID": "[concat(variables('sqldatasourceNicId'),'/backendAddressPools/',variables('LBBE'))]",
+    "sqldatasourceRDPNATRuleID": "[concat(variables('sqldatasourcelbID'),'/inboundNatRules/',variables('RDPNAT'))]",
+    "sqldatasourceBEAddressPoolID": "[concat(variables('sqldatasourcelbID'),'/backendAddressPools/',variables('LBBE'))]",
 
     "ssrsIPConfigID": "[concat(variables('ssrsNicId'),'/ipConfigurations/ipconfig1')]",
     "adDataDisk": "ADDataDisk",
@@ -256,6 +266,12 @@
         "name": "[variables('ssrsSubnetName')]",
         "properties": {
           "addressPrefix": "[parameters('ssrsSubnet')]"
+        }
+      },
+      {
+        "name": "[variables('sqldatasourceSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('sqldatasourceSubnet')]"
         }
       }
     ],
@@ -443,7 +459,7 @@
             "value": "[variables('sqllbName')]"
           },
           "sqldatasourcelbName": {
-            "value": "[variables('sqldatsourceLBName')]"
+            "value": "[variables('sqldatasourceLBName')]"
           },
           "LBFE": {
             "value": "[variables('LBFE')]"
@@ -542,9 +558,9 @@
           "sqldatasourceNicName": {
             "value": "[variables('sqldatasourceNicName')]"
           },
-          //"sqldatasourceSubnetRef": {
-          //  "value": "[variables('sqlSubnetRef')]"
-          //},
+          "sqldatasourceSubnetRef": {
+            "value": "[variables('sqldatasourceSubnetRef')]"
+          },
           "sqldatasourceBEAddressPoolID": {
             "value": "[variables('sqldatasourceBEAddressPoolID')]"
           },

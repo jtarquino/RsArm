@@ -217,7 +217,6 @@
       "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('adLBName'))]",
       "type": "string"
     },
-
     "sqldatasourcelbID": {
       "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('sqldatasourcelbName'))]",
       "type": "string"
