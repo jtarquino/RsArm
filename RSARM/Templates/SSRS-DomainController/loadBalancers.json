@@ -14,9 +14,6 @@
     "sqllbName": {
       "type": "string"
     },
-    "sqldatasourcelbName": {
-      "type": "string"
-    },
     "LBFE": {
       "type": "string"
     },
@@ -33,6 +30,9 @@
       "type": "string"
     },
     "adPublicIpResourceId": {
+      "type": "string"
+    },
+    "sqldatasourcelbName": {
       "type": "string"
     },
     "sqlPublicIpResourceId": {
@@ -168,7 +168,7 @@
     },
     {
       "apiVersion": "2015-06-15",
-      "name": "[parameters('sqldatasourcePublicIpResourceId')]",
+      "name": "[parameters('sqldatasourcelbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('location')]",
       "properties": {
@@ -215,6 +215,11 @@
     },
     "adlbID": {
       "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('adLBName'))]",
+      "type": "string"
+    },
+
+    "sqldatasourcelbID": {
+      "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('sqldatasourcelbName'))]",
       "type": "string"
     }
   }
