@@ -175,6 +175,7 @@
     "assetLocation": "[concat(parameters('baseURL'),'/dsc')]",
     "adVMName": "ssrs-ad",
     "catalogVMName": "ssrs-catalog",
+    "datasourceVMName": "ssrs-datasource",
     "ssrsVMName": "ssrs-rs",
     "LBFE": "LBFE",
     "LBBE": "LBBE",
@@ -186,6 +187,7 @@
     "adNicName": "adNic",
     "sqlNicName": "sqlNic",
     "ssrsNicName": "ssrsNic",
+    "datasourceNicName": "datasourceNic",
     "VnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "adSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('adSubnetName'))]",
     "sqlSubnetRef": "[concat(variables('VnetID'),'/subnets/',variables('sqlSubnetName'))]",
@@ -210,8 +212,10 @@
     "adDataDisk": "ADDataDisk",
     "adDataDiskSize": 1000,
     "sqlDataDisk": "SQLDataDisk",
+    "datasourceDataDisk": "DatasourceDataDisk",
     "sqlDataDiskSize": 1000,
     "sqlLogDisk": "SQLLogDisk",
+    "datasourceLogDisk": "DatasourceLogDisk",
     "sqlLogDiskSize": 1000,
     "ssrsDataDisk": "SsrsDataDisk",
     "ssrsDataDiskSize": 100,
@@ -248,10 +252,9 @@
     "adConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
     "sqlConfigureModulesURL": "[concat(variables('assetLocation'),'/ConfigureSqlServer.ps1.zip')]",
     "sqlConfigurationFunction": "ConfigureSqlServer.ps1\\ConfigureSqlServer",
+    "datasourceConfigurationFunction": "ConfigureDatasource.ps1\\ConfigureDatasource",
     "ssrsConfigurationFunction": "ConfigureSsrsServer.ps1\\ConfigureSsrsServer",
     "domainJoinConfigurationFunction": "ConfigureDomainJoin.ps1\\ConfigureDomainJoin",
-    "spConfigureModulesURL": "[concat(variables('assetLocation'),'/ConfigureSharePointServer.ps1.zip')]",
-    "spConfigurationFunction": "ConfigureSharePointServer.ps1\\ConfigureSharePointServer",
     "sqlPrepareModulesURL": "[concat(variables('assetLocation'),'/PrepareSqlServer.ps1.zip')]",
     "sqlPreparationFunction": "PrepareSqlServer.ps1\\PrepareSqlServer",
     "ssrsPreparationFunction": "PrepareSsrsServer.ps1\\PrepareSsrsServer",
@@ -515,6 +518,9 @@
           },
           "spWebNAT": {
             "value": "[variables('ssrsWebNAT')]"
+          },
+          "datasourceNicName": {
+            "value": "[variables('datasourceNicName')]"
           }
         }
       }
@@ -627,6 +633,77 @@
           },
           "sqlNicName": {
             "value": "[variables('sqlNicName')]"
+          },
+          "sqlPrepareModulesURL": {
+            "value": "[variables('sqlPrepareModulesURL')]"
+          },
+          "sqlPreparationFunction": {
+            "value": "[variables('sqlPreparationFunction')]"
+          },
+          "DNSServerAddress": {
+            "value": "[parameters('adNicIPAddress')]"
+          },
+          "sqlImageVersion": {
+            "value": "[parameters('sqlImageVersion')]"
+          },
+          "sqlImageSKU": {
+            "value": "[parameters('sqlImageSKU')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "ProvisioningSQLDasourceServerVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/SettingUpStorageAccount",
+        "Microsoft.Resources/deployments/CreatingNetworkInterfaces",
+        "Microsoft.Resources/deployments/CreatingAvailabilitySets",
+        "Microsoft.Resources/deployments/SettingUpLoadBalancers"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('ProvisioningSQLUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "sqlVMName": {
+            "value": "[variables('datasourceVMName')]"
+          },
+          "sqlVMSize": {
+            "value": "[parameters('sqlVMSize')]"
+          },
+          "sqlAvailabilitySetName": {
+            "value": "[variables('sqlAvailabilitySetName')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountName')]"
+          },
+          "sqlDataDisk": {
+            "value": "[variables('datasourceDataDisk')]"
+          },
+          "sqlDataDiskSize": {
+            "value": "[variables('sqlDataDiskSize')]"
+          },
+          "sqlLogDisk": {
+            "value": "[variables('datasourceLogDisk')]"
+          },
+          "sqlLogDiskSize": {
+            "value": "[variables('sqlLogDiskSize')]"
+          },
+          "sqlNicName": {
+            "value": "[variables('datasourceNicName')]"
           },
           "sqlPrepareModulesURL": {
             "value": "[variables('sqlPrepareModulesURL')]"
@@ -785,6 +862,56 @@
           },
           "sqlConfigurationFunction": {
             "value": "[variables('sqlConfigurationFunction')]"
+          },
+          "domainName": {
+            "value": "[parameters('domainName')]"
+          },
+          "sqlServerServiceAccountUserName": {
+            "value": "[parameters('sqlServerServiceAccountUserName')]"
+          },
+          "sqlServerServiceAccountPassword": {
+            "value": "[parameters('sqlServerServiceAccountPassword')]"
+          },
+          "sqlServerSAUserName": {
+            "value": "[parameters('sqlServerSAUserName')]"
+          },
+          "sqlServerSAPassword": {
+            "value": "[parameters('sqlServerSAPassword')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "ConfiguringDatasourceVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/UpdatingDNStoPrimaryADVM"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('configuringSQLUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "sqlVMName": {
+            "value": "[variables('datasourceVMName')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "sqlConfgureModulesURL": {
+            "value": "[variables('sqlConfigureModulesURL')]"
+          },
+          "sqlConfigurationFunction": {
+            "value": "[variables('datasourceConfigurationFunction')]"
           },
           "domainName": {
             "value": "[parameters('domainName')]"

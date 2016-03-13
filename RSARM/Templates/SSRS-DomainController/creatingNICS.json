@@ -49,6 +49,9 @@
     },
     "spWebNAT": {
       "type": "string"
+    },
+    "datasourceNicName": {
+      "type": "string"
     }
   },
   "resources": [
@@ -136,6 +139,35 @@
                 },
                 {
                   "id": "[concat(parameters('splbResourceId'),'/inboundNatRules/',parameters('spWebNAT'))]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('datasourceNicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[parameters('location')]",
+      "apiVersion": "2015-06-15",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('sqlSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[parameters('sqlBEAddressPoolID')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[parameters('sqlRDPNATRuleID')]"
                 }
               ]
             }
