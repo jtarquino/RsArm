@@ -190,7 +190,7 @@
     "ssrsWebNAT": "ssrsWeb",
     "adSubnetName": "adSubnet",
     "sqlSubnetName": "sqlSubnet",
-    "sqldatasourceSubnetName": "sqlSubnet",
+    "sqldatasourceSubnetName": "sqldatasourceSubnet",
     "ssrsSubnetName": "ssrsSubnet",
     "adNicName": "adNic",
     "sqlNicName": "sqlNic",
@@ -246,6 +246,7 @@
     "sqldatasourcepublicIPAddressName": "sqldatasourcepublicIP",
     "ssrsAvailabilitySetName": "ssrsAvailabiltySet",
     "sqlAvailabilitySetName": "sqlAvailabiltySet",
+    "sqldatasourceAvailabilitySetName": "sqldatasourceAvailabiltySet",
     "adAvailabilitySetName": "adAvailabiltySet",
     "publicIPAddressType": "Dynamic",
     "ssrspublicIPAddressName": "ssrsPublicIp",
@@ -373,8 +374,11 @@
           "sqlAvailabilitySetName": {
             "value": "[variables('sqlAvailabilitySetName')]"
           },
-          "spAvailabilitySetName": {
+          "ssrsAvailabilitySetName": {
             "value": "[variables('ssrsAvailabilitySetName')]"
+          },
+          "sqldatasourceAvailabilitySetName": {
+            "value": "[variables('sqldatasourceAvailabilitySetName')]"
           }
         }
       }
@@ -725,7 +729,7 @@
             "value": "[parameters('sqlVMSize')]"
           },
           "sqlAvailabilitySetName": {
-            "value": "[variables('sqlAvailabilitySetName')]"
+            "value": "[variables('sqldatasourceAvailabilitySetName')]"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
