@@ -38,7 +38,7 @@
         "autoUpgradeMinorVersion": false,
         "settings": {
           "ModulesUrl": "[parameters('domainJoinConfgureModulesURL')]",
-          "wmfVersion": "4.0",
+          "wmfVersion": "5.0",
           "ConfigurationFunction": "[parameters('domainJoinConfigurationFunction')]",
           "Properties": {
             "DomainName": "[parameters('domainName')]",

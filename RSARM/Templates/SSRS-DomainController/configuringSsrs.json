@@ -37,7 +37,7 @@
         "autoUpgradeMinorVersion": false,
         "settings": {
           "ModulesUrl": "[parameters('ssrsConfgureModulesURL')]",
-          "wmfVersion": "4.0",
+          "wmfVersion": "5.0",
           "ConfigurationFunction": "[parameters('ssrsConfigurationFunction')]",
           "Properties": {
             "CatalogMachine": "[parameters('catalogVMName')]",

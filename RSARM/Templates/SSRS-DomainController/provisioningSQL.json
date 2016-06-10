@@ -140,7 +140,7 @@
         "autoUpgradeMinorVersion": false,
         "settings": {
           "ModulesUrl": "[parameters('sqlPrepareModulesURL')]",
-          "wmfVersion": "4.0",
+          "wmfVersion": "5.0",
           "ConfigurationFunction": "[parameters('sqlPreparationFunction')]",
           "Properties": {
                 "DNSServer": "[parameters('DNSServerAddress')]"
